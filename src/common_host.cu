@@ -140,7 +140,9 @@ HashType string_to_hash_type(const std::string& hash_type) {
 		return HashType::ReversedPrime;
 	} else if (equals_case_insensitive(hash_type, "Rng")) {
 		return HashType::Rng;
-	}
+	} else if (equals_case_insensitive(hash_type, "JumpConsistent")) {
+        return HashType::JumpConsistent;
+    }
 
 	throw std::runtime_error{fmt::format("Invalid hash type: {}", hash_type)};
 }
@@ -151,6 +153,7 @@ std::string to_string(HashType hash_type) {
 		case HashType::CoherentPrime: return "CoherentPrime";
 		case HashType::ReversedPrime: return "ReversedPrime";
 		case HashType::Rng: return "Rng";
+		case HashType::JumpConsistent: return "JumpConsistent";
 		default: throw std::runtime_error{"Invalid hash type."};
 	}
 }

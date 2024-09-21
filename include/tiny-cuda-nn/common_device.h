@@ -675,13 +675,30 @@ __device__ uint32_t rng_hash(const uvec<N_DIMS>& pos_grid, const uint32_t seed =
 	return rng.next_uint();
 }
 
+template <uint32_t N_DIMS>
+__device__ uint32_t jump_consistent_hash(const uvec<N_DIMS>& pos_grid, const uint32_t num_buckets) {
+    uint64_t key = 0;
+    for (uint32_t i = 0; i < N_DIMS; ++i) {
+        key = key * 2862933555777941757ULL + pos_grid[i];
+    }
+    
+    int64_t b = 1, j = 0;
+    while (j < num_buckets) {
+        b = j;
+        key = key * 2862933555777941757ULL + 1;
+        j = (b + 1) * (double(1LL << 31) / double((key >> 33) + 1));
+    }
+    return static_cast<uint32_t>(b);
+}
+
 template <uint32_t N_DIMS, HashType HASH_TYPE>
-__device__ uint32_t grid_hash(const uvec<N_DIMS>& pos_grid) {
+__device__ uint32_t grid_hash(const uvec<N_DIMS>& pos_grid, const uint32_t hashmap_size) {
 	switch (HASH_TYPE) {
 		case HashType::Prime: return prime_hash<N_DIMS>(pos_grid);
 		case HashType::CoherentPrime: return coherent_prime_hash<N_DIMS>(pos_grid);
 		case HashType::ReversedPrime: return reversed_prime_hash<N_DIMS>(pos_grid);
 		case HashType::Rng: return rng_hash<N_DIMS>(pos_grid);
+		case HashType::JumpConsistent: return jump_consistent_hash<N_DIMS>(pos_grid, hashmap_size);
 	}
 
 	return 0;
@@ -700,7 +717,7 @@ __device__ uint32_t grid_index(const GridType grid_type, const uint32_t hashmap_
 	}
 
 	if (grid_type == GridType::Hash && hashmap_size < stride) {
-		index = grid_hash<N_DIMS, HASH_TYPE>(pos_grid);
+		index = grid_hash<N_DIMS, HASH_TYPE>(pos_grid, hashmap_size);
 	}
 
 	return index % hashmap_size;

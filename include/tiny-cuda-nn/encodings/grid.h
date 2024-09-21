@@ -1203,6 +1203,7 @@ GridEncoding<T>* create_grid_encoding(uint32_t n_dims_to_encode, const json& enc
 		case HashType::CoherentPrime: return create_grid_encoding_templated_1<T, HashType::CoherentPrime>(n_dims_to_encode, encoding);
 		case HashType::ReversedPrime: return create_grid_encoding_templated_1<T, HashType::ReversedPrime>(n_dims_to_encode, encoding);
 		case HashType::Rng: return create_grid_encoding_templated_1<T, HashType::Rng>(n_dims_to_encode, encoding);
+		case HashType::JumpConsistent: return create_grid_encoding_templated_1<T, HashType::JumpConsistent>(n_dims_to_encode, encoding);
 		default: throw std::runtime_error{"GridEncoding: invalid hash type."};
 	}
 }

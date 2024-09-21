@@ -146,6 +146,7 @@ enum class HashType {
 	CoherentPrime,
 	ReversedPrime,
 	Rng,
+	JumpConsistent
 };
 
 enum class InterpolationType {
